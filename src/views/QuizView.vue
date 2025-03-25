@@ -1,99 +1,57 @@
 <template>
-  <main>
-    <div class="container">
-      <button class="button" @click="resetQuiz">回到主页</button>
-      <div class="content">
-        <div class="header">
-          <h2>问题 {{ currentQuestion + 1 }}/{{ questions.length }}</h2>
-          <p v-if="$route.query.debug">当前分数：{{ totalScore }}</p>
-        </div>
-        <div class="question-container">
-          <p class="question-text">{{ questions[currentQuestion].text }}</p>
+  <v-main>
+    <v-container>
+      <v-btn color="primary" @click="resetQuiz" class="mb-4">
+        <v-icon left>mdi-home</v-icon>
+        回到主页
+      </v-btn>
+
+      <v-card class="pa-4" v-if="!loading && questions.length > 0">
+        <v-card-title class="d-flex justify-space-between align-center">
+          <h3>问题 {{ currentQuestion + 1 }}/{{ questions.length }}</h3>
+          <v-chip v-if="$route.query.debug" color="info"> 当前分数：{{ totalScore }} </v-chip>
+        </v-card-title>
+
+        <v-card-text>
+          <p class="question-text text-h5 mb-4">{{ questions[currentQuestion].text }}</p>
+
           <div class="options-container">
             <div
               v-for="(option, index) in questions[currentQuestion].options"
               :key="index"
-              class="option-item"
               @click="selectAnswer(index)"
+              class="option-item mb-2"
+              :class="{ 'selected-option': selectedAnswers[currentQuestion] === index }"
             >
-              <span class="option-label">{{ String.fromCharCode(65 + index) }}.</span>
-              <span>{{ option }}</span>
+              <v-icon class="mr-2 mt-1">mdi-circle-medium</v-icon>
+              <span class="option-text"> {{ String.fromCharCode(65 + index) }}. {{ option }} </span>
             </div>
           </div>
-          <div class="button-container">
-            <button
-              v-if="$route.query.debug"
-              @click="prevQuestion"
-              :disabled="currentQuestion === 0"
-              class="secondary-button"
-            >
-              上一题
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </main>
+        </v-card-text>
+
+        <v-card-actions v-if="$route.query.debug">
+          <v-btn @click="prevQuestion" :disabled="currentQuestion === 0" color="secondary">
+            <v-icon left>mdi-arrow-left</v-icon>
+            上一题
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+
+      <v-progress-circular
+        v-if="loading"
+        indeterminate
+        color="primary"
+        class="ma-4"
+      ></v-progress-circular>
+    </v-container>
+  </v-main>
 </template>
-
-<style scoped>
-.question-container {
-  margin-top: 1rem;
-}
-
-.question-text {
-  font-size: 1.2rem;
-  margin-bottom: 1.5rem;
-}
-
-.options-container {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 2rem;
-}
-
-.option-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.option-item:hover {
-  background-color: #f5f5f5;
-}
-
-.option-label {
-  font-weight: bold;
-}
-
-.button-container {
-  display: flex;
-  justify-content: center;
-  gap: 16px;
-}
-
-.secondary-button {
-  background-color: #f0f0f0;
-  color: #333;
-  padding: 8px 24px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.secondary-button:hover {
-  background-color: #e0e0e0;
-}
-</style>
 
 <script>
 export default {
   data() {
     return {
+      loading: true,
       currentQuestion: 0,
       totalScore: 0,
       selectedAnswers: [],
@@ -107,9 +65,15 @@ export default {
   },
   methods: {
     async loadQuestions() {
-      const response = await fetch('/remw.md')
-      const text = await response.text()
-      this.parseMarkdown(text)
+      try {
+        const response = await fetch('/remw.md')
+        const text = await response.text()
+        this.parseMarkdown(text)
+      } catch (error) {
+        console.error('Failed to load questions:', error)
+      } finally {
+        this.loading = false
+      }
     },
     parseMarkdown(text) {
       const lines = text.split('\n')
@@ -193,3 +157,37 @@ export default {
   },
 }
 </script>
+
+<style scoped>
+.options-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.option-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.option-item:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.option-text {
+  white-space: normal;
+  word-wrap: break-word;
+  font-size: 1.1rem; /* 新增：增大字体大小 */
+}
+
+.selected-option {
+  background-color: #e3f2fd;
+}
+
+.question-text {
+  font-size: 1.5rem !important;
+}
+</style>

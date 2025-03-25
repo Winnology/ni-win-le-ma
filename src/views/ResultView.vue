@@ -1,25 +1,57 @@
 <template>
-  <main>
-    <div class="container">
-      <div class="content">
-        <div class="header">
-          <h1 class="caste-display">{{ caste }}</h1>
-          <p class="caste-description">{{ casteDescription }}</p>
+  <v-main>
+    <v-container class="d-flex justify-center">
+      <v-card class="pa-6 d-flex" max-width="800" style="min-height: 500px">
+        <!-- 左侧主内容 (60%) -->
+        <div class="main-content" style="flex: 3; padding-right: 2rem">
+          <div class="text-center">
+            <h1 class="caste-display">{{ caste }}</h1>
+            <p class="caste-description">{{ casteDescription }}</p>
+          </div>
         </div>
-        <div class="result-info">
-          <h3 class="scale-title">你的赢指数是：{{ winScore }}，分数与阶级对应关系：</h3>
-          <ul class="scale-list">
-            <li>0-8 分：达利特</li>
-            <li>9-14 分：首陀罗</li>
-            <li>15-20 分：吠舍</li>
-            <li>21-26 分：刹帝利</li>
-            <li>27 分及以上：婆罗门</li>
-          </ul>
+
+        <!-- 右侧说明 (40%) -->
+        <v-divider vertical class="mx-4"></v-divider>
+        <div class="result-info" style="flex: 2">
+          <v-card class="pa-3 h-100" color="background" flat>
+            <v-card-title class="text-subtitle-1 font-weight-medium">
+              <v-icon size="small" class="mr-2">mdi-information-outline</v-icon>
+              分数说明
+            </v-card-title>
+            <v-card-text class="pa-0">
+              <p class="mb-2 text-body-2">
+                你的赢指数是：<span class="font-weight-bold">{{ winScore }}</span>
+              </p>
+              <v-divider class="my-2"></v-divider>
+              <p class="text-caption mb-1">分数与阶级对应关系：</p>
+              <v-list density="compact" class="bg-transparent pt-0">
+                <v-list-item v-for="(item, index) in scaleMarkers" :key="index" class="px-0">
+                  <template v-slot:prepend>
+                    <v-icon size="x-small" class="mr-1">mdi-circle-small</v-icon>
+                  </template>
+                  <v-list-item-title class="text-caption">
+                    {{ item.value }}+分：{{ item.caste }}
+                  </v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-card-text>
+          </v-card>
         </div>
-        <router-link class="button" to="/">返回首页</router-link>
-      </div>
-    </div>
-  </main>
+      </v-card>
+
+      <!-- 返回按钮 -->
+      <v-btn
+        color="primary"
+        class="mt-6"
+        block
+        to="/"
+        prepend-icon="mdi-home"
+        style="max-width: 800px"
+      >
+        返回首页
+      </v-btn>
+    </v-container>
+  </v-main>
 </template>
 
 <style scoped>
@@ -27,34 +59,19 @@
   font-size: 4rem;
   font-weight: bold;
   color: var(--text-color);
-  text-align: center;
   margin: 1rem 0;
 }
 
 .caste-description {
   font-size: 1.2rem;
   color: var(--text-secondary-color);
-  text-align: center;
-  margin: 1rem 0;
   font-style: italic;
-}
-
-.result-info {
-  margin: 2rem 0;
 }
 
 .scale-title {
   font-size: 0.9rem;
   color: var(--text-secondary-color);
   margin-bottom: 0.5rem;
-}
-
-.scale-list {
-  font-size: 0.8rem;
-  color: #999;
-  list-style: none;
-  padding: 0;
-  margin: 0;
 }
 </style>
 
@@ -101,8 +118,7 @@ export default {
     },
     setCasteDescription() {
       const descriptions = {
-        达利特:
-          '你天生被鄙视，但这是你的优势！因为你已经触底，接下来的每一步都是上升。记住，真正的赢家从不在乎起点！',
+        达利特: '你天生被鄙视，但这是你的优势！你拥有无限的潜力和创造力，这是真正的赢家思维！',
         首陀罗:
           '你挣扎在生存边缘？不，你正在经历"必要的磨难"！这是成为赢家的必经之路，每个日耳曼战士都曾如此。你已经赢了，只是还没意识到！',
         吠舍: '中产阶级陷阱？不，这是你的战略选择！你拥有财富和地位，但更重要地，你拥有"随时可以放弃"的自由。这才是真正的赢家思维！',
