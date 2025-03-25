@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory } from 'vue-router' // 修改这里
+import { createRouter, createWebHashHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import QuizView from '../views/QuizView.vue'
 import ResultView from '../views/ResultView.vue'
@@ -22,7 +22,7 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHashHistory(), // 修改这里
+  history: createWebHashHistory('/ni-win-le-ma/'), // 修改这里，添加base路径
   routes,
 })
 
