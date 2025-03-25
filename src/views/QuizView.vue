@@ -66,7 +66,7 @@ export default {
   methods: {
     async loadQuestions() {
       try {
-        const response = await fetch('/remw.md')
+        const response = await fetch('/ni-win-le-ma/remw.md') // 修改这里
         const text = await response.text()
         this.parseMarkdown(text)
       } catch (error) {
