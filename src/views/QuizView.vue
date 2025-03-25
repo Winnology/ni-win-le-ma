@@ -66,41 +66,20 @@ export default {
   methods: {
     async loadQuestions() {
       try {
-        const response = await fetch('/ni-win-le-ma/remw.md') // 修改这里
-        const text = await response.text()
-        this.parseMarkdown(text)
+        const response = await fetch('/questions.json')
+        const data = await response.json()
+        this.allQuestions = data.map(question => ({
+          text: question.question,
+          options: question.options,
+          scores: question.options.map((_, index) => index) // 根据选项顺序生成分数
+        }))
       } catch (error) {
         console.error('Failed to load questions:', error)
       } finally {
         this.loading = false
       }
     },
-    parseMarkdown(text) {
-      const lines = text.split('\n')
-      let currentQuestion = null
-
-      lines.forEach((line) => {
-        if (line.startsWith('## ')) {
-          if (currentQuestion) {
-            this.allQuestions.push(currentQuestion)
-          }
-          currentQuestion = {
-            text: line.replace('## ', ''),
-            options: [],
-            scores: [],
-          }
-        } else if (line.startsWith('- ')) {
-          const option = line.replace('- ', '')
-          currentQuestion.options.push(option)
-          // 修改得分逻辑：第一个选项0分，第二个1分，以此类推
-          currentQuestion.scores.push(currentQuestion.options.length - 1)
-        }
-      })
-
-      if (currentQuestion) {
-        this.allQuestions.push(currentQuestion)
-      }
-    },
+    // 移除 parseMarkdown 方法，因为不再需要解析 markdown
     startQuiz() {
       // 随机选择10个题目
       const shuffledQuestions = this.shuffleArray(this.allQuestions).slice(0, 10)
